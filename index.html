@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台灣各縣市天氣卡片-API串接練習</title>
+    <style>
+        *{
+            padding: 0px;
+            margin: 0px;
+            box-sizing: border-box;
+            transition: .5s;
+        }
+        body {
+            background-color: bisque;
+        }
+
+        main {
+            max-width: 1700px;
+            width: 90%;
+            background-color: lightblue;
+            margin: auto;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            width: 300px;
+            height: 400px;
+            margin: 20px;
+            border-radius: 5%;
+            background-color: lightpink;
+            text-align: center;
+            font-family: "源柔ゴシック等幅";
+        }
+
+        .card .area {
+            width: 100%;
+            font-size: 20px;
+            line-height: 2;
+            font-weight: 500;
+        }
+
+        .card img {
+            height: 150px;
+            /* padding-top: 60%; */
+            /* background-color: blueviolet; */
+        }
+
+        .card .degree {
+            font-size: 48px;
+            font-family: monospace;
+            margin-bottom: 10px;
+            line-height: 2;
+        }
+
+        .card .feel-like,
+        .card .weather {
+            font-size: 16px;
+            line-height: 2;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <main>
+        <!-- <div class="card chayi">
+            <div class="area">雲林縣</div>
+            <div class="pic"></div>
+            <div class="degree">28~32°C</div>
+            <div class="feel-like">悶熱</div>
+            <div class="weather">多雲時晴偶陣雨</div>
+        </div> -->
+        
+    </main>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <script>
+        const url = 'https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-C0032-001?Authorization=rdec-key-123-45678-011121314'
+        var main = document.querySelector('main')
+
+        fetch(url, { method: 'GET' })
+        .then(function (response) {
+            console.log(response)
+            return response.json();
+        })
+        .then(function (myJson) {
+            console.log(myJson);
+
+            myJson.records.location.forEach(element => {
+                main.innerHTML += `
+                <div class="card">
+                    <div class="area">${element.locationName}</div>
+                    <img src=${weather_pic(element.weatherElement[1].time[0].parameter.parameterName)}>
+                    <div class="degree">${element.weatherElement[2].time[0].parameter.parameterName}~${element.weatherElement[4].time[0].parameter.parameterName}°C</div>
+                    <div class="feel-like">${element.weatherElement[3].time[0].parameter.parameterName}</div>
+                    <div class="weather">${element.weatherElement[0].time[0].parameter.parameterName}</div>
+                </div>
+                `
+            });
+        });
+        function weather_pic(rain_rate){
+            if(rain_rate < 20){
+                return "./img/sunny.png"
+            }else if(rain_rate < 50){
+                return "./img/cloudy.png"
+            }
+            return "./img/rainy.png"
+        }
+            
+    </script>
+</body>
+
+</html>
